@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+            <link rel="shortcut icon" type="image/png" href="#{resource['img/Rauchfaenger.png']}"/>
+        </f:facet>
+        <title>Page Title </title>
+        <h:outputScript name="js/nanoscroller.js" library="sapphire-layout" />
+        <h:outputScript name="js/layout.js" library="sapphire-layout" />
+        <h:outputScript name="js/ripple.js" library="sapphire-layout" />
+    </h:head>
+
+    <h:body>
+        <h:outputStylesheet name="primeicons/primeicons.css" library="primefaces"/>
+        <div class="ui-g ui-fluid">
+            <div class="card card-w-title">
+            
+            <style>
+				    body .md-inputfield .ui-inputfield::placeholder {
+					    opacity: 0;
+					    transition: all 0.2s;
+					}
+					
+					body .md-inputfield .ui-inputfield.ui-state-focus::placeholder {
+					    opacity: 1;
+					}
+                </style>
+                <h:form id="inseratForm">
+                    <div class="card-title">Objekt anlegen trial</div>
+                            
+                            <p:fieldset legend="Preis und Kosten" toggleable="true" toggleSpeed="500">
+
+                                <div class="ui-g-12 ui-md-6">
+									<div class="ui-inputgroup">
+										<span class="ui-inputgroup-addon">
+											<i class="material-icons">account_circle</i>
+										</span>
+										<h:panelGroup styleClass="md-inputfield md-inputfield_marg_top">
+											<p:inputText id="minPreisId"  autocomplete="off"  value=""
+											             placeholder="€" symbol=" €" symbolPosition="s" 
+											             decimalSeparator="," thousandSeparator="."/>
+											<p:message for="minPreisId" style="color: red">
+												<p:autoUpdate/>
+											</p:message>
+											<label>#{msg['immobilien.gesamt.mind.verkaufspreis']}"</label>
+										</h:panelGroup>     	
+									  </div>
+								 </div>
+
+                                  <div class="ui-g-12 ui-md-6">
+									<div class="ui-inputgroup">
+										<span class="ui-inputgroup-addon">
+											<i class="material-icons">account_circle</i>
+										</span>
+										<h:panelGroup styleClass="md-inputfield md-inputfield_marg_top">
+											<p:inputNumber id="betriebsKostenId"  autocomplete="off"  value=""
+											               placeholder="€" symbol=" €" symbolPosition="s"  
+											               decimalSeparator="," thousandSeparator="."/>
+											<p:message for="betriebsKostenId" style="color: red">
+												<p:autoUpdate/>
+											</p:message>
+											<label>Betriebskosten (netto), EUR</label>
+										</h:panelGroup>     	
+									  </div>
+								 </div>
+
+                             </p:fieldset>
+                </h:form>
+            </div>
+        </div>
+        
+        <h:outputStylesheet name="css/nanoscroller.css" library="sapphire-layout" />
+        <h:outputStylesheet name="css/ripple.css" library="sapphire-layout" />
+        <h:outputStylesheet name="css/grid.css" library="sapphire-layout" />
+        <h:outputStylesheet name="css/layout-#{guestPreferences.layout}.css" library="sapphire-layout" />
+	</h:body>
+</html>
