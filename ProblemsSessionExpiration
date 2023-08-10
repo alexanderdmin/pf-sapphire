@@ -1,8 +1,10 @@
-This is my shortened version of web.xml for security reasons:
+I have a PrimeFaces (current version 12.0, upgraded from 7.0) application running on WildFly 17 (tested also on WildFly 21) with JSF Mojarra 2.2 and have a problem after my session expires.
+
+This is my web.xml (a shortened version for security reasons)
 
 https://github.com/alexanderdmin/pf-sapphire/blob/main/web.xml
 
-As you can see from it I set my session expiration to 1 minute in order to be able to test more easily. In my tests, I tested with protected URL resources  found under
+As you can see from it I set my session expiration to 1 minute in order to be able to test more easily. In my tests, I tested with protected URL resources that are fund under
 
 		<web-resource-collection>
 			<web-resource-name>All resources in /ave/makler/*</web-resource-name>
@@ -10,13 +12,13 @@ As you can see from it I set my session expiration to 1 minute in order to be ab
 			<url-pattern>/ave/makler/*</url-pattern>
 		</web-resource-collection>
 
-that require a login. To track a session creation and expiration, I included a SessionDebugListener class, as referred to in the web.xml. Its both methods sessionCreated() and sessionDestroyed() just dump the id of the session created / destroyed 
+and require a login. To track a session creation and expiration, I included a SessionDebugListener class, as referred to in the web.xml. Its both methods sessionCreated() and sessionDestroyed() just dump the id of the session created / destroyed 
 
 I have several problems and will try to summarize them by priority:
 
 1.) I log into the application, wait until my session expires, and click on a GUI element of the application, whose HTML representation is an HTML element having a PrimeFaces JavaScript function in its "onclick" attribute, such as:
 
-<button id="..." name="....." class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" onclick="PrimeFaces.ab({...});return false;" type="submit">
+<button id="resultsFormId:j_idt47:0:j_idt62" name="resultsFormId:j_idt47:0:j_idt62" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" onclick="PrimeFaces.ab({s:&quot;resultsFormId:j_idt47:0:j_idt62&quot;,f:&quot;resultsFormId&quot;});return false;" type="submit">
 	<span class="ui-button-icon-left ui-icon ui-c ui-icon-format-list-numbered"></span>
 	<span class="ui-button-text ui-c">ui-button</span>
 </button>
@@ -26,9 +28,9 @@ In this case, no error message is shown on the console. It only shows that a new
 16:34:41,107 WARN [at.home.digest.utils.SessionDebugListener] (default task-9) Http Session KVP1qsmx_US6mpWXgoDTbNS_AF-7jhAc4jLhFzQN created
 
 In the browser I see either no change at all, or, in case the element clicked is a button as above, I only see it rotating, but nothing else happens.
-This behavior is the same regardless how I change the value of the context parameter javax.faces.STATE_SAVING_METHOD (i.e. regardless whether it is "server" or "client") in web.xml
+This behaviour is the same regardless how I change the value of the context parameter javax.faces.STATE_SAVING_METHOD (i.e. regardless whether it is "server" or "client") in web.xml
 
-2.) This problem occurs if the value of the context parameter javax.faces.STATE_SAVING_METHOD is set to server in web.xml: I log into the application, wait until the session expires and then click on a element, whose HTML representation DOES NOT refer a PrimeFaces JavaScript function in its "onclick" attribute. For example, I click on
+2.) This problem occurs if the value of the context parameter javax.faces.STATE_SAVING_METHOD is set to server in web.xml: I log into the application, wait until the sesion expires and then click on a element, whose HTML representation DOES NOT refer a PrimeFaces JavaScript function in its "onclick" attribute. For example, I click on
 
 <a class="ripplelink" href="/heimdi/ave/makler/objekt/dashboard.jsf">
 	<i class=" layout-menuitem-icon"></i>
@@ -37,8 +39,16 @@ This behavior is the same regardless how I change the value of the context param
 
 then no error message is shown on the console, but the browser shows this:
 
-https://github.com/alexanderdmin/pf-sapphire/blob/main/partialResponse.html
-
+<partial-response>
+<changes>
+<update id="javax.faces.Resource">
+<![CDATA[ <link type="text/css" rel="stylesheet" href="/heimdi/javax.faces.resource/primeicons/primeicons.css.jsf?ln=primefaces&amp;v=12.0.0&amp;e=12.0.7" /><link type="text/css" rel="stylesheet" href="/heimdi/javax.faces.resource/commons.css.jsf?ln=css" /><link type="text/css" rel="stylesheet" href="/heimdi/javax.faces.resource/components.css.jsf?ln=primefaces&amp;v=12.0.0&amp;e=12.0.7" /><script type="text/javascript" src="/heimdi/javax.faces.resource/jquery/jquery.js.jsf?ln=primefaces&amp;v=12.0.0&amp;e=12.0.7"></script><script type="text/javascript" src="/heimdi/javax.faces.resource/core.js.jsf?ln=primefaces&amp;v=12.0.0&amp;e=12.0.7"></script><script type="text/javascript" src="/heimdi/javax.faces.resource/components.js.jsf?ln=primefaces&amp;v=12.0.0&amp;e=12.0.7"></script><script type="text/javascript" src="/heimdi/javax.faces.resource/jquery/jquery-plugins.js.jsf?ln=primefaces&amp;v=12.0.0&amp;e=12.0.7"></script><link type="text/css" rel="stylesheet" href="/heimdi/javax.faces.resource/css/layout-bluegray.css.jsf?ln=sapphire-layout" /> ]]>
+</update>
+<update id="j_id1:javax.faces.ViewState:0">
+<![CDATA[ -8137177718815002291:-1882681275640713953 ]]>
+</update>
+</changes>
+</partial-response>
 
 However, if the javax.faces.STATE_SAVING_METHOD is set to client in web.xml in the above situation, and I click on the same link after the session expiration, I get forwarded to the login page, i.e. in this case the behavior of the application is OK
 
@@ -68,3 +78,6 @@ You could find this link helpful:
 
 https://stackoverflow.com/questions/73435565/jsf-2-3-session-expired-vs-viewexpired-problems
 
+
+Thank you and kind regards,
+Alex
