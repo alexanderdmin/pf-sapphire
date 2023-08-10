@@ -1,0 +1,21 @@
+
+Dear Sirs,
+
+I am using PrimeFaces 12 running on WildFly 17 (productive version is WildFly 21). I post my question here, as in my case it is directly related to another post of mine:
+
+https://forum.primefaces.org/viewtopic.php?f=106&t=81743
+
+
+My question is: According to ChatGPT, the preferred value of javax.faces.STATE_SAVING_METHOD is server, as it is generally more secure.
+However, as you can see from my post at the beginning, when I set this parameter to client, I face less problems with the session expiration.
+
+But according to ChatGPT there are at least to problems setting this value to client:
+
+        ◦ Information disclosure: The state data sent to the client can potentially expose sensitive information about the internal structure and behavior of the application, making it easier for attackers to understand and exploit vulnerabilities.
+        ◦ Tampering: Since the state data is sent to the client, it can be modified by malicious users to manipulate the application's behavior or gain unauthorized access to certain functionalities.
+
+Are these both problems somehow work-arounded in PrimeFaces? Can I consider the value client secure enough?
+What is your recommendation ?
+
+Thank you and kind regards,
+Alex
