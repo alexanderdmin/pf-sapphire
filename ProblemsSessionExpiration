@@ -1,0 +1,70 @@
+This is my shortened version of web.xml for security reasons:
+
+https://github.com/alexanderdmin/pf-sapphire/blob/main/web.xml
+
+As you can see from it I set my session expiration to 1 minute in order to be able to test more easily. In my tests, I tested with protected URL resources  found under
+
+		<web-resource-collection>
+			<web-resource-name>All resources in /ave/makler/*</web-resource-name>
+			<description>All resources in /ave/makler/*</description>
+			<url-pattern>/ave/makler/*</url-pattern>
+		</web-resource-collection>
+
+that require a login. To track a session creation and expiration, I included a SessionDebugListener class, as referred to in the web.xml. Its both methods sessionCreated() and sessionDestroyed() just dump the id of the session created / destroyed 
+
+I have several problems and will try to summarize them by priority:
+
+1.) I log into the application, wait until my session expires, and click on a GUI element of the application, whose HTML representation is an HTML element having a PrimeFaces JavaScript function in its "onclick" attribute, such as:
+
+<button id="..." name="....." class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" onclick="PrimeFaces.ab({...});return false;" type="submit">
+	<span class="ui-button-icon-left ui-icon ui-c ui-icon-format-list-numbered"></span>
+	<span class="ui-button-text ui-c">ui-button</span>
+</button>
+
+In this case, no error message is shown on the console. It only shows that a new session has just been created like this:
+
+16:34:41,107 WARN [at.home.digest.utils.SessionDebugListener] (default task-9) Http Session KVP1qsmx_US6mpWXgoDTbNS_AF-7jhAc4jLhFzQN created
+
+In the browser I see either no change at all, or, in case the element clicked is a button as above, I only see it rotating, but nothing else happens.
+This behavior is the same regardless how I change the value of the context parameter javax.faces.STATE_SAVING_METHOD (i.e. regardless whether it is "server" or "client") in web.xml
+
+2.) This problem occurs if the value of the context parameter javax.faces.STATE_SAVING_METHOD is set to server in web.xml: I log into the application, wait until the session expires and then click on a element, whose HTML representation DOES NOT refer a PrimeFaces JavaScript function in its "onclick" attribute. For example, I click on
+
+<a class="ripplelink" href="/heimdi/ave/makler/objekt/dashboard.jsf">
+	<i class=" layout-menuitem-icon"></i>
+	<span class="menuitem-text">Dashboard</span>
+</a>
+
+then no error message is shown on the console, but the browser shows this:
+
+https://github.com/alexanderdmin/pf-sapphire/blob/main/partialResponse.html
+
+
+However, if the javax.faces.STATE_SAVING_METHOD is set to client in web.xml in the above situation, and I click on the same link after the session expiration, I get forwarded to the login page, i.e. in this case the behavior of the application is OK
+
+
+3.) This problem also occurs if the value of the context parameter javax.faces.STATE_SAVING_METHOD is set to server in web.xml: Under this situation, I load the login page of the application, a session is created, but I stay on the login page and I do not attempt to log in until the session has expired. After its expiration, I try to log in and I get no error message or any change on the browser screen, but the console shows:
+
+7:14:26,523 SEVERE [javax.enterprise.resource.webcontainer.jsf.context] (default task-11) javax.faces.application.ViewExpiredException: viewId:/login/login.jsf - Ansicht /login/login.jsf konnte nicht wiederhergestellt werden.
+at com.sun.jsf-impl@2.3.9.SP02//com.sun.faces.lifecycle.RestoreViewPhase.execute(RestoreViewPhase.java:194)
+at com.sun.jsf-impl@2.3.9.SP02//com.sun.faces.lifecycle.Phase.doPhase(Phase.java:76)
+at com.sun.jsf-impl@2.3.9.SP02//com.sun.faces.lifecycle.RestoreViewPhase.doPhase(RestoreViewPhase.java:109)
+................
+
+
+In this case refreshing the browser with Ctrl+F5 creates a new session like this:
+
+17:15:43,969 WARN [at.home.digest.utils.SessionDebugListener] (default task-11) Http Session sN9k5aQ610lEEvdamo7-hb_P884HQDQxA2nNocQT created
+
+after which and I am able to log in.
+
+
+There are also other test cases or variants, but I would not post them here to save space.
+
+Could you please try to help me?
+
+You could find this link helpful:
+
+
+https://stackoverflow.com/questions/73435565/jsf-2-3-session-expired-vs-viewexpired-problems
+
